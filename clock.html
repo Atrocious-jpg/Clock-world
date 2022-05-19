@@ -1,44 +1,548 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <script src="main.js"></script>
-   
-    
-    <title>World| Clock </title>
-</head>
-<body>
-    
-    <div id="card">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <script src="https://kit.fontawesome.com/de19764f4a.js" crossorigin="anonymous"></script> -->
+    <link rel="stylesheet" href="styles.css" />
+    <!-- <script src="main.js"></script> -->
+
+    <title>World| Clock</title>
+  </head>
+  <body>
+    <!-- <img class="shape" src="https://s3.us-east-2.amazonaws.com/ui.glass/shape.svg" alt=""> -->
+    <div id="main_container">
+      <div class="header">
+        <h2>Clock</h2>
+        <select id="timezones" onchange="changeTZ()"></select>
+      </div>
+      <div id="card">
         <div class="analogue">
-            <h1>Analogue Clock</h1>
+          <h1>Analogue Clock</h1>
+          <div class="clock">
+            <div class="hour"></div>
+            <div class="min"></div>
+            <div class="second"></div>
+          </div>
         </div>
         <div class="digital">
-              <span class="container">
-                  
-              </span>
+          <span class="container" onclick="hours()"> </span>
+          <span class="HOURS"> </span>
+          <span class="sound">
+            <i class="fas fa-volume-up" onclick="toggleIcon()"></i>
+          </span>
         </div>
+      </div>
     </div>
+    <script>
+      let digital = document.querySelector(".container");
+      let hour = document.querySelector(".HOURS");
+      const d = Name();
+      const secondHand = document.querySelector(".second");
+      let dropdown = document.querySelector("#timezones");
+      const minsHand = document.querySelector(".min");
+      const hourHand = document.querySelector(".hour");
+      const i = document.querySelector("i");
+      let audio;
+      let vol = false;
+      let Default = "Africa/Nairobi";
+      dropdown.value = Default;
+      var arr = Default;
+      const url = "zones.json";
 
+      var zones_arr = [
+       { zone_name: "Africa/Nairobi" },
+        { zone_name: "Africa/Abidjan" },
+        { zone_name: "Africa/Accra" },
+        { zone_name: "Africa/Addis_Ababa" },
+        { zone_name: "Africa/Algiers" },
+        { zone_name: "Africa/Asmara" },
+        { zone_name: "Africa/Bamako" },
+        { zone_name: "Africa/Bangui" },
+        { zone_name: "Africa/Banjul" },
+        { zone_name: "Africa/Bissau" },
+        { zone_name: "Africa/Blantyre" },
+        { zone_name: "Africa/Brazzaville" },
+        { zone_name: "Africa/Bujumbura" },
+        { zone_name: "Africa/Cairo" },
+        { zone_name: "Africa/Casablanca" },
+        { zone_name: "Africa/Ceuta" },
+        { zone_name: "Africa/Conakry" },
+        { zone_name: "Africa/Dakar" },
+        { zone_name: "Africa/Dar_es_Salaam" },
+        { zone_name: "Africa/Djibouti" },
+        { zone_name: "Africa/Douala" },
+        { zone_name: "Africa/El_Aaiun" },
+        { zone_name: "Africa/Freetown" },
+        { zone_name: "Africa/Gaborone" },
+        { zone_name: "Africa/Harare" },
+        { zone_name: "Africa/Johannesburg" },
+        { zone_name: "Africa/Juba" },
+        { zone_name: "Africa/Kampala" },
+        { zone_name: "Africa/Khartoum" },
+        { zone_name: "Africa/Kigali" },
+        { zone_name: "Africa/Kinshasa" },
+        { zone_name: "Africa/Lagos" },
+        { zone_name: "Africa/Libreville" },
+        { zone_name: "Africa/Lome" },
+        { zone_name: "Africa/Luanda" },
+        { zone_name: "Africa/Lubumbashi" },
+        { zone_name: "Africa/Lusaka" },
+        { zone_name: "Africa/Malabo" },
+        { zone_name: "Africa/Maputo" },
+        { zone_name: "Africa/Maseru" },
+        { zone_name: "Africa/Mbabane" },
+        { zone_name: "Africa/Mogadishu" },
+        { zone_name: "Africa/Monrovia" },
+        { zone_name: "Africa/Nairobi" },
+        { zone_name: "Africa/Ndjamena" },
+        { zone_name: "Africa/Niamey" },
+        { zone_name: "Africa/Nouakchott" },
+        { zone_name: "Africa/Ouagadougou" },
+        { zone_name: "Africa/Porto-Novo" },
+        { zone_name: "Africa/Sao_Tome" },
+        { zone_name: "Africa/Tripoli" },
+        { zone_name: "Africa/Tunis" },
+        { zone_name: "Africa/Windhoek" },
+        { zone_name: "America/Adak" },
+        { zone_name: "America/Anchorage" },
+        { zone_name: "America/Anguilla" },
+        { zone_name: "America/Antigua" },
+        { zone_name: "America/Araguaina" },
+        { zone_name: "America/Argentina/Buenos_Aires" },
+        { zone_name: "America/Argentina/Catamarca" },
+        { zone_name: "America/Argentina/Cordoba" },
+        { zone_name: "America/Argentina/Jujuy" },
+        { zone_name: "America/Argentina/La_Rioja" },
+        { zone_name: "America/Argentina/Mendoza" },
+        { zone_name: "America/Argentina/Rio_Gallegos" },
+        { zone_name: "America/Argentina/Salta" },
+        { zone_name: "America/Argentina/San_Juan" },
+        { zone_name: "America/Argentina/San_Luis" },
+        { zone_name: "America/Argentina/Tucuman" },
+        { zone_name: "America/Argentina/Ushuaia" },
+        { zone_name: "America/Aruba" },
+        { zone_name: "America/Asuncion" },
+        { zone_name: "America/Atikokan" },
+        { zone_name: "America/Bahia" },
+        { zone_name: "America/Bahia_Banderas" },
+        { zone_name: "America/Barbados" },
+        { zone_name: "America/Belem" },
+        { zone_name: "America/Belize" },
+        { zone_name: "America/Blanc-Sablon" },
+        { zone_name: "America/Boa_Vista" },
+        { zone_name: "America/Bogota" },
+        { zone_name: "America/Boise" },
+        { zone_name: "America/Cambridge_Bay" },
+        { zone_name: "America/Campo_Grande" },
+        { zone_name: "America/Cancun" },
+        { zone_name: "America/Caracas" },
+        { zone_name: "America/Cayenne" },
+        { zone_name: "America/Cayman" },
+        { zone_name: "America/Chicago" },
+        { zone_name: "America/Chihuahua" },
+        { zone_name: "America/Costa_Rica" },
+        { zone_name: "America/Creston" },
+        { zone_name: "America/Cuiaba" },
+        { zone_name: "America/Curacao" },
+        { zone_name: "America/Danmarkshavn" },
+        { zone_name: "America/Dawson" },
+        { zone_name: "America/Dawson_Creek" },
+        { zone_name: "America/Denver" },
+        { zone_name: "America/Detroit" },
+        { zone_name: "America/Dominica" },
+        { zone_name: "America/Edmonton" },
+        { zone_name: "America/Eirunepe" },
+        { zone_name: "America/El_Salvador" },
+        { zone_name: "America/Fort_Nelson" },
+        { zone_name: "America/Fortaleza" },
+        { zone_name: "America/Glace_Bay" },
+        { zone_name: "America/Goose_Bay" },
+        { zone_name: "America/Grand_Turk" },
+        { zone_name: "America/Grenada" },
+        { zone_name: "America/Guadeloupe" },
+        { zone_name: "America/Guatemala" },
+        { zone_name: "America/Guayaquil" },
+        { zone_name: "America/Guyana" },
+        { zone_name: "America/Halifax" },
+        { zone_name: "America/Havana" },
+        { zone_name: "America/Hermosillo" },
+        { zone_name: "America/Indiana/Indianapolis" },
+        { zone_name: "America/Indiana/Knox" },
+        { zone_name: "America/Indiana/Marengo" },
+        { zone_name: "America/Indiana/Petersburg" },
+        { zone_name: "America/Indiana/Tell_City" },
+        { zone_name: "America/Indiana/Vevay" },
+        { zone_name: "America/Indiana/Vincennes" },
+        { zone_name: "America/Indiana/Winamac" },
+        { zone_name: "America/Inuvik" },
+        { zone_name: "America/Iqaluit" },
+        { zone_name: "America/Jamaica" },
+        { zone_name: "America/Juneau" },
+        { zone_name: "America/Kentucky/Louisville" },
+        { zone_name: "America/Kentucky/Monticello" },
+        { zone_name: "America/Kralendijk" },
+        { zone_name: "America/La_Paz" },
+        { zone_name: "America/Lima" },
+        { zone_name: "America/Los_Angeles" },
+        { zone_name: "America/Lower_Princes" },
+        { zone_name: "America/Maceio" },
+        { zone_name: "America/Managua" },
+        { zone_name: "America/Manaus" },
+        { zone_name: "America/Marigot" },
+        { zone_name: "America/Martinique" },
+        { zone_name: "America/Matamoros" },
+        { zone_name: "America/Mazatlan" },
+        { zone_name: "America/Menominee" },
+        { zone_name: "America/Merida" },
+        { zone_name: "America/Metlakatla" },
+        { zone_name: "America/Mexico_City" },
+        { zone_name: "America/Miquelon" },
+        { zone_name: "America/Moncton" },
+        { zone_name: "America/Monterrey" },
+        { zone_name: "America/Montevideo" },
+        { zone_name: "America/Montserrat" },
+        { zone_name: "America/Nassau" },
+        { zone_name: "America/New_York" },
+        { zone_name: "America/Nipigon" },
+        { zone_name: "America/Nome" },
+        { zone_name: "America/Noronha" },
+        { zone_name: "America/North_Dakota/Beulah" },
+        { zone_name: "America/North_Dakota/Center" },
+        { zone_name: "America/North_Dakota/New_Salem" },
+        { zone_name: "America/Nuuk" },
+        { zone_name: "America/Ojinaga" },
+        { zone_name: "America/Panama" },
+        { zone_name: "America/Pangnirtung" },
+        { zone_name: "America/Paramaribo" },
+        { zone_name: "America/Phoenix" },
+        { zone_name: "America/Port-au-Prince" },
+        { zone_name: "America/Port_of_Spain" },
+        { zone_name: "America/Porto_Velho" },
+        { zone_name: "America/Puerto_Rico" },
+        { zone_name: "America/Punta_Arenas" },
+        { zone_name: "America/Rainy_River" },
+        { zone_name: "America/Rankin_Inlet" },
+        { zone_name: "America/Recife" },
+        { zone_name: "America/Regina" },
+        { zone_name: "America/Resolute" },
+        { zone_name: "America/Rio_Branco" },
+        { zone_name: "America/Santarem" },
+        { zone_name: "America/Santiago" },
+        { zone_name: "America/Santo_Domingo" },
+        { zone_name: "America/Sao_Paulo" },
+        { zone_name: "America/Scoresbysund" },
+        { zone_name: "America/Sitka" },
+        { zone_name: "America/St_Barthelemy" },
+        { zone_name: "America/St_Johns" },
+        { zone_name: "America/St_Kitts" },
+        { zone_name: "America/St_Lucia" },
+        { zone_name: "America/St_Thomas" },
+        { zone_name: "America/St_Vincent" },
+        { zone_name: "America/Swift_Current" },
+        { zone_name: "America/Tegucigalpa" },
+        { zone_name: "America/Thule" },
+        { zone_name: "America/Thunder_Bay" },
+        { zone_name: "America/Tijuana" },
+        { zone_name: "America/Toronto" },
+        { zone_name: "America/Tortola" },
+        { zone_name: "America/Vancouver" },
+        { zone_name: "America/Whitehorse" },
+        { zone_name: "America/Winnipeg" },
+        { zone_name: "America/Yakutat" },
+        { zone_name: "America/Yellowknife" },
+        { zone_name: "Antarctica/Casey" },
+        { zone_name: "Antarctica/Davis" },
+        { zone_name: "Antarctica/DumontDUrville" },
+        { zone_name: "Antarctica/Macquarie" },
+        { zone_name: "Antarctica/Mawson" },
+        { zone_name: "Antarctica/McMurdo" },
+        { zone_name: "Antarctica/Palmer" },
+        { zone_name: "Antarctica/Rothera" },
+        { zone_name: "Antarctica/Syowa" },
+        { zone_name: "Antarctica/Troll" },
+        { zone_name: "Antarctica/Vostok" },
+        { zone_name: "Arctic/Longyearbyen" },
+        { zone_name: "Asia/Aden" },
+        { zone_name: "Asia/Almaty" },
+        { zone_name: "Asia/Amman" },
+        { zone_name: "Asia/Anadyr" },
+        { zone_name: "Asia/Aqtau" },
+        { zone_name: "Asia/Aqtobe" },
+        { zone_name: "Asia/Ashgabat" },
+        { zone_name: "Asia/Atyrau" },
+        { zone_name: "Asia/Baghdad" },
+        { zone_name: "Asia/Bahrain" },
+        { zone_name: "Asia/Baku" },
+        { zone_name: "Asia/Bangkok" },
+        { zone_name: "Asia/Barnaul" },
+        { zone_name: "Asia/Beirut" },
+        { zone_name: "Asia/Bishkek" },
+        { zone_name: "Asia/Brunei" },
+        { zone_name: "Asia/Chita" },
+        { zone_name: "Asia/Choibalsan" },
+        { zone_name: "Asia/Colombo" },
+        { zone_name: "Asia/Damascus" },
+        { zone_name: "Asia/Dhaka" },
+        { zone_name: "Asia/Dili" },
+        { zone_name: "Asia/Dubai" },
+        { zone_name: "Asia/Dushanbe" },
+        { zone_name: "Asia/Famagusta" },
+        { zone_name: "Asia/Gaza" },
+        { zone_name: "Asia/Hebron" },
+        { zone_name: "Asia/Ho_Chi_Minh" },
+        { zone_name: "Asia/Hong_Kong" },
+        { zone_name: "Asia/Hovd" },
+        { zone_name: "Asia/Irkutsk" },
+        { zone_name: "Asia/Jakarta" },
+        { zone_name: "Asia/Jayapura" },
+        { zone_name: "Asia/Jerusalem" },
+        { zone_name: "Asia/Kabul" },
+        { zone_name: "Asia/Kamchatka" },
+        { zone_name: "Asia/Karachi" },
+        { zone_name: "Asia/Kathmandu" },
+        { zone_name: "Asia/Khandyga" },
+        { zone_name: "Asia/Kolkata" },
+        { zone_name: "Asia/Krasnoyarsk" },
+        { zone_name: "Asia/Kuala_Lumpur" },
+        { zone_name: "Asia/Kuching" },
+        { zone_name: "Asia/Kuwait" },
+        { zone_name: "Asia/Macau" },
+        { zone_name: "Asia/Magadan" },
+        { zone_name: "Asia/Makassar" },
+        { zone_name: "Asia/Manila" },
+        { zone_name: "Asia/Muscat" },
+        { zone_name: "Asia/Nicosia" },
+        { zone_name: "Asia/Novokuznetsk" },
+        { zone_name: "Asia/Novosibirsk" },
+        { zone_name: "Asia/Omsk" },
+        { zone_name: "Asia/Oral" },
+        { zone_name: "Asia/Phnom_Penh" },
+        { zone_name: "Asia/Pontianak" },
+        { zone_name: "Asia/Pyongyang" },
+        { zone_name: "Asia/Qatar" },
+        { zone_name: "Asia/Qostanay" },
+        { zone_name: "Asia/Qyzylorda" },
+        { zone_name: "Asia/Riyadh" },
+        { zone_name: "Asia/Sakhalin" },
+        { zone_name: "Asia/Samarkand" },
+        { zone_name: "Asia/Seoul" },
+        { zone_name: "Asia/Shanghai" },
+        { zone_name: "Asia/Singapore" },
+        { zone_name: "Asia/Srednekolymsk" },
+        { zone_name: "Asia/Taipei" },
+        { zone_name: "Asia/Tashkent" },
+        { zone_name: "Asia/Tbilisi" },
+        { zone_name: "Asia/Tehran" },
+        { zone_name: "Asia/Thimphu" },
+        { zone_name: "Asia/Tokyo" },
+        { zone_name: "Asia/Tomsk" },
+        { zone_name: "Asia/Ulaanbaatar" },
+        { zone_name: "Asia/Urumqi" },
+        { zone_name: "Asia/Ust-Nera" },
+        { zone_name: "Asia/Vientiane" },
+        { zone_name: "Asia/Vladivostok" },
+        { zone_name: "Asia/Yakutsk" },
+        { zone_name: "Asia/Yangon" },
+        { zone_name: "Asia/Yekaterinburg" },
+        { zone_name: "Asia/Yerevan" },
+        { zone_name: "Atlantic/Azores" },
+        { zone_name: "Atlantic/Bermuda" },
+        { zone_name: "Atlantic/Canary" },
+        { zone_name: "Atlantic/Cape_Verde" },
+        { zone_name: "Atlantic/Faroe" },
+        { zone_name: "Atlantic/Madeira" },
+        { zone_name: "Atlantic/Reykjavik" },
+        { zone_name: "Atlantic/South_Georgia" },
+        { zone_name: "Atlantic/St_Helena" },
+        { zone_name: "Atlantic/Stanley" },
+        { zone_name: "Australia/Adelaide" },
+        { zone_name: "Australia/Brisbane" },
+        { zone_name: "Australia/Broken_Hill" },
+        { zone_name: "Australia/Darwin" },
+        { zone_name: "Australia/Eucla" },
+        { zone_name: "Australia/Hobart" },
+        { zone_name: "Australia/Lindeman" },
+        { zone_name: "Australia/Lord_Howe" },
+        { zone_name: "Australia/Melbourne" },
+        { zone_name: "Australia/Perth" },
+        { zone_name: "Australia/Sydney" },
+        { zone_name: "Europe/Amsterdam" },
+        { zone_name: "Europe/Andorra" },
+        { zone_name: "Europe/Astrakhan" },
+        { zone_name: "Europe/Athens" },
+        { zone_name: "Europe/Belgrade" },
+        { zone_name: "Europe/Berlin" },
+        { zone_name: "Europe/Bratislava" },
+        { zone_name: "Europe/Brussels" },
+        { zone_name: "Europe/Bucharest" },
+        { zone_name: "Europe/Budapest" },
+        { zone_name: "Europe/Busingen" },
+        { zone_name: "Europe/Chisinau" },
+        { zone_name: "Europe/Copenhagen" },
+        { zone_name: "Europe/Dublin" },
+        { zone_name: "Europe/Gibraltar" },
+        { zone_name: "Europe/Guernsey" },
+        { zone_name: "Europe/Helsinki" },
+        { zone_name: "Europe/Isle_of_Man" },
+        { zone_name: "Europe/Istanbul" },
+        { zone_name: "Europe/Jersey" },
+        { zone_name: "Europe/Kaliningrad" },
+        { zone_name: "Europe/Kiev" },
+        { zone_name: "Europe/Kirov" },
+        { zone_name: "Europe/Lisbon" },
+        { zone_name: "Europe/Ljubljana" },
+        { zone_name: "Europe/London" },
+        { zone_name: "Europe/Luxembourg" },
+        { zone_name: "Europe/Madrid" },
+        { zone_name: "Europe/Malta" },
+        { zone_name: "Europe/Mariehamn" },
+        { zone_name: "Europe/Minsk" },
+        { zone_name: "Europe/Monaco" },
+        { zone_name: "Europe/Moscow" },
+        { zone_name: "Europe/Oslo" },
+        { zone_name: "Europe/Paris" },
+        { zone_name: "Europe/Podgorica" },
+        { zone_name: "Europe/Prague" },
+        { zone_name: "Europe/Riga" },
+        { zone_name: "Europe/Rome" },
+        { zone_name: "Europe/Samara" },
+        { zone_name: "Europe/San_Marino" },
+        { zone_name: "Europe/Sarajevo" },
+        { zone_name: "Europe/Saratov" },
+        { zone_name: "Europe/Simferopol" },
+        { zone_name: "Europe/Skopje" },
+        { zone_name: "Europe/Sofia" },
+        { zone_name: "Europe/Stockholm" },
+        { zone_name: "Europe/Tallinn" },
+        { zone_name: "Europe/Tirane" },
+        { zone_name: "Europe/Ulyanovsk" },
+        { zone_name: "Europe/Uzhgorod" },
+        { zone_name: "Europe/Vaduz" },
+        { zone_name: "Europe/Vatican" },
+        { zone_name: "Europe/Vienna" },
+        { zone_name: "Europe/Vilnius" },
+        { zone_name: "Europe/Volgograd" },
+        { zone_name: "Europe/Warsaw" },
+        { zone_name: "Europe/Zagreb" },
+        { zone_name: "Europe/Zaporozhye" },
+        { zone_name: "Europe/Zurich" },
+        { zone_name: "Indian/Antananarivo" },
+        { zone_name: "Indian/Chagos" },
+        { zone_name: "Indian/Christmas" },
+        { zone_name: "Indian/Cocos" },
+        { zone_name: "Indian/Comoro" },
+        { zone_name: "Indian/Kerguelen" },
+        { zone_name: "Indian/Mahe" },
+        { zone_name: "Indian/Maldives" },
+        { zone_name: "Indian/Mauritius" },
+        { zone_name: "Indian/Mayotte" },
+        { zone_name: "Indian/Reunion" },
+        { zone_name: "Pacific/Apia" },
+        { zone_name: "Pacific/Auckland" },
+        { zone_name: "Pacific/Bougainville" },
+        { zone_name: "Pacific/Chatham" },
+        { zone_name: "Pacific/Chuuk" },
+        { zone_name: "Pacific/Easter" },
+        { zone_name: "Pacific/Efate" },
+        { zone_name: "Pacific/Fakaofo" },
+        { zone_name: "Pacific/Fiji" },
+        { zone_name: "Pacific/Funafuti" },
+        { zone_name: "Pacific/Galapagos" },
+        { zone_name: "Pacific/Gambier" },
+        { zone_name: "Pacific/Guadalcanal" },
+        { zone_name: "Pacific/Guam" },
+        { zone_name: "Pacific/Honolulu" },
+        { zone_name: "Pacific/Kanton" },
+        { zone_name: "Pacific/Kiritimati" },
+        { zone_name: "Pacific/Kosrae" },
+        { zone_name: "Pacific/Kwajalein" },
+        { zone_name: "Pacific/Majuro" },
+        { zone_name: "Pacific/Marquesas" },
+        { zone_name: "Pacific/Midway" },
+        { zone_name: "Pacific/Nauru" },
+        { zone_name: "Pacific/Niue" },
+        { zone_name: "Pacific/Norfolk" },
+        { zone_name: "Pacific/Noumea" },
+        { zone_name: "Pacific/Pago_Pago" },
+        { zone_name: "Pacific/Palau" },
+        { zone_name: "Pacific/Pitcairn" },
+        { zone_name: "Pacific/Pohnpei" },
+        { zone_name: "Pacific/Port_Moresby" },
+        { zone_name: "Pacific/Rarotonga" },
+        { zone_name: "Pacific/Saipan" },
+        { zone_name: "Pacific/Tahiti" },
+        { zone_name: "Pacific/Tarawa" },
+        { zone_name: "Pacific/Tongatapu" },
+        { zone_name: "Pacific/Wake" },
+        { zone_name: "Pacific/Wallis" },
+      ];
+      zones_arr.forEach((element) => {
+        dropdown.innerHTML +=
+          '<option value = "' + element['zone_name'] + '">' + element['zone_name'] + '</option>';
+      });
 
- <script type="text/javascript">
-     
-     let digital = document.querySelector('.container');
-     
+      function Name() {
+        const str = new Date().toLocaleString("en-US", { timeZone: arr });
+        return new Date(str);
+      }
+      function analog() {
+        const d = Name(); //object of date()
+        let hr = d.getHours();
+        let min = d.getMinutes();
+        let sec = d.getSeconds();
+        let newHr = hours(hr) ? hr - 12 : hr;
+        let hr_rotation = 30 * hr + min / 2; //converting current time
+        let min_rotation = 6 * min;
+        let sec_rotation = 6 * sec;
 
-     function change(text){
+        let time = `${change(newHr)}:${change(min)}:${change(sec)}`;
+        digital.innerHTML = hours(hr) ? (time += " pm") : (time += " am");
+
+        hourHand.style.transform = `rotate(${hr_rotation}deg)`;
+        minsHand.style.transform = `rotate(${min_rotation}deg)`;
+        secondHand.style.transform = `rotate(${sec_rotation}deg)`;
+        ticking();
+      }
+      setInterval(analog, 1000);
+
+      function toggleIcon() {
+        if (i.getAttribute("class") == "fas fa-volume-up") {
+          i.setAttribute("class", "fas fa-volume-mute");
+          vol = false;
+        } else {
+          i.setAttribute("class", "fas fa-volume-up");
+          vol = true;
+        }
+      }
+
+      function hours(num) {
+        if (num >= 12) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+      function ticking() {
+        audio = new Audio("src/audio/clock.mp3");
+        if (!vol) {
+          audio.volume = 0;
+        } else {
+          audio.volume = 1;
+        }
+        audio.play();
+        //  audio.loop;
+      }
+
+      function change(text) {
         text = text < 10 ? `0${text}` : text;
         return text;
-     }
-     setInterval(()=>{
-     const d = new Date();
-     let time = `${change(d.getHours())}:${change(d.getMinutes())}:${change(d.getSeconds())}`;
-     digital.innerHTML = time;
-
-     },1000)
- </script>
-</body>
+      }
+      function changeTZ() {
+        arr = timezones.value;
+        analog();
+      }
+    </script>
+  </body>
 </html>
